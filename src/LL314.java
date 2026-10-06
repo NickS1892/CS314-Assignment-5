@@ -240,6 +240,26 @@ public class LL314<E> implements IList<E> {
         }
     }
 
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("[");
+
+        DoubleListNode<E> head = first;
+
+        while (head != null) {
+            sb.append(head.data);
+
+            if (head.next != null) {
+                sb.append(", ");
+            }
+
+            head = head.next;
+        }
+
+        sb.append("]");
+        return sb.toString();
+    }
+
     /**
      * A class that represents a node to be used in a linked list.
      * These nodes are doubly linked. All methods are O(1).
