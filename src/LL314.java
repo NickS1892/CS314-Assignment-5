@@ -182,8 +182,22 @@ public class LL314<E> implements IList<E> {
 
     }
 
-    public void add(E item){
-        DoubleListNode<E> add = new DoubleListNode<>(last, item, null);
+    public void add(E item) {
+        if (item == null) {
+            throw new IllegalArgumentException("Item to add cannot be null");
+        }
+
+        DoubleListNode<E> newNode = new DoubleListNode<>(last, item, null);
+
+        if (size == 0) {
+            first = newNode;
+            last = newNode;
+        } else {
+            last.next = newNode;
+            last = newNode;
+        }
+
+        size++;
     }
     /**
      * add item to the front of the list. <br>
