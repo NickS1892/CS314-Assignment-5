@@ -304,6 +304,37 @@ public class LL314<E> implements IList<E> {
         return sb.toString();
     }
 
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        }
+
+        if (other == null || !(other instanceof LL314)) {
+            return false;
+        }
+
+        LL314<?> otherList = (LL314<?>) other;
+
+        if (this.size != otherList.size) {
+            return false;
+        }
+
+        DoubleListNode<E> current1 = this.first;
+        DoubleListNode<?> current2 = otherList.first;
+
+        while (current1 != null) {
+            if (!current1.data.equals(current2.data)) {
+                return false;
+            }
+
+            current1 = current1.next;
+            current2 = current2.next;
+        }
+
+        return true;
+    }
+
     /**
      * A class that represents a node to be used in a linked list.
      * These nodes are doubly linked. All methods are O(1).
