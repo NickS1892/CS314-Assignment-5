@@ -31,9 +31,14 @@ public class LL314<E> implements IList<E> {
 
             @Override
             public E next() {
+                if (!hasNext()) {
+                    throw new java.util.NoSuchElementException();
+                }
+
                 lastReturned = head;
                 E result = head.data;
                 head = head.next;
+
                 return result;
             }
 
@@ -199,6 +204,7 @@ public class LL314<E> implements IList<E> {
             DoubleListNode<E> prevNode = getNode(pos - 1);
             DoubleListNode<E> newNode = new DoubleListNode<>(prevNode, item, getNode(pos));
             prevNode.next = newNode;
+            newNode.prev = newNode;
             size++;
         }
 
