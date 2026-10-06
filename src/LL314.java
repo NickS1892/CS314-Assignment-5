@@ -243,8 +243,16 @@ public class LL314<E> implements IList<E> {
      */
     public E removeLast() {
         E data = last.data;
-        last.prev = null;
-        last = null;
+
+        if (size == 1) {
+            first = null;
+            last = null;
+        } else {
+            last = last.prev;
+            last.next = null;
+        }
+
+        size--;
         return data;
     }
 
