@@ -165,18 +165,18 @@ public class LinkedListTester {
         }
 
 
-        // test 3
-        System.out.println("\nTest 3: Adding at pos 0 in empty list");
-        list.insert(0, "A");
-        actual = toArray(list);
-        expected = new Object[] {"A"};
-        System.out.println( "Expected result: " + Arrays.toString(expected) );
-        System.out.println( "Actual result: " + Arrays.toString(actual) );
-        if (arraysSame(actual, expected)) {
-            System.out.println("Passed test 3");
-        } else {
-            System.out.println("Failed test 3");
-        }
+            // test 3
+            System.out.println("\nTest 3: Adding at pos 0 in empty list");
+            list.insert(0, "A");
+            actual = toArray(list);
+            expected = new Object[] {"A"};
+            System.out.println( "Expected result: " + Arrays.toString(expected) );
+            System.out.println( "Actual result: " + Arrays.toString(actual) );
+            if (arraysSame(actual, expected)) {
+                System.out.println("Passed test 3");
+            } else {
+                System.out.println("Failed test 3");
+            }
 
 
         //test 4

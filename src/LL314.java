@@ -18,6 +18,26 @@ public class LL314<E> implements IList<E> {
 
     }
 
+    public Iterator<E> iterator() {
+        return new Iterator<E>() {
+
+            private DoubleListNode<E> head = first;
+
+            @Override
+            public boolean hasNext() {
+                return head != null;
+            }
+
+            @Override
+            public E next() {
+                E result = head.data;
+                head = head.next;
+                return result;
+            }
+        };
+    }
+
+
     public DoubleListNode<E> getNode(int pos){
 
         if(pos == size - 1){
@@ -44,24 +64,48 @@ public class LL314<E> implements IList<E> {
         return this.size;
     }
 
-    public E remove(int pos){
-        if(pos == 0) {
-            removeFirst();
+
+    public E remove(int pos) {
+        if (pos == 0) {
+            return removeFirst();
+        } else if (pos == size - 1) {
+            return removeLast();
         }
 
-        if(pos == size-1){
-            removeLast();
-        }
+        DoubleListNode<E> prevNode = getNode(pos - 1);
+        E data = prevNode.next.data;
 
-            DoubleListNode<E> prevNode = getNode(pos - 1);
-            E data = prevNode.next.data;
-            prevNode.next = prevNode.next.next;
-            size--;
-            if(prevNode.next == null){
-                last = prevNode;
+        prevNode.next = prevNode.next.next;
+        prevNode.next.prev = prevNode;
+
+        size--;
+
+        return data;
+    }
+
+    public boolean remove(E obj) {
+        DoubleListNode<E> current = first;
+
+        while (current != null) {
+            if (current.data.equals(obj)) {
+
+                if (current == first) {
+                    removeFirst();
+                } else if (current == last) {
+                    removeLast();
+                } else {
+                    current.prev.next = current.next;
+                    current.next.prev = current.prev;
+                    size--;
+                }
+
+                return true;
             }
-            return data;
 
+            current = current.next;
+        }
+
+        return false;
     }
 
     public void makeEmpty(){
@@ -73,12 +117,57 @@ public class LL314<E> implements IList<E> {
     public E get(int pos){
         return getNode(pos).data;
     }
+
+    public IList<E> getSubList(int start, int stop){
+        DoubleListNode<E> head = first;
+        for(int i = 0; i < start; i++){
+            head = head.next;
+        }
+        LL314<E> sublist = new LL314<E>();
+
+        for(int i = start; i < stop; i++){
+            sublist.add(head.data);
+            head = head.next;
+        }
+
+        return sublist;
+    }
+
+    public int indexOf(E item){
+        DoubleListNode<E> head = first;
+        int idx = 0;
+
+        while(head != null){
+            if(head.data.equals(item)){
+                return idx;
+            }
+            head = head.next;
+            idx++;
+        }
+        return -1;
+    }
+
+    public int indexOf(E item, int pos) {
+        DoubleListNode<E> head = getNode(pos);
+        int index = pos;
+
+        while (head != null) {
+            if (head.data.equals(item)) {
+                return index;
+            }
+
+            head = head.next;
+            index++;
+        }
+
+        return -1;
+    }
     /**
      * insert item to position in linkedlist
      * pre: item != null <br>
      * post: size is incremented by one, get(pos) = item
      */
-    public void insert(E item, int pos){
+    public void insert(int pos, E item){
 
         if(pos == 0){
             addFirst(item);
@@ -143,6 +232,12 @@ public class LL314<E> implements IList<E> {
         last.prev = null;
         last = null;
         return data;
+    }
+
+    public void removeRange(int start, int stop){
+        for(int i = start; i < stop;i++){
+            remove(start);
+        }
     }
 
     /**
