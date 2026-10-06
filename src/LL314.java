@@ -22,6 +22,7 @@ public class LL314<E> implements IList<E> {
         return new Iterator<E>() {
 
             private DoubleListNode<E> head = first;
+            private DoubleListNode<E> lastReturned = null;
 
             @Override
             public boolean hasNext() {
@@ -30,9 +31,30 @@ public class LL314<E> implements IList<E> {
 
             @Override
             public E next() {
+                lastReturned = head;
                 E result = head.data;
                 head = head.next;
                 return result;
+            }
+
+            @Override
+            public void remove(){
+                //nothing to return
+                if (lastReturned == null) {
+                    throw new IllegalStateException();
+                }
+
+                if (lastReturned == first) {
+                    removeFirst();
+                } else if (lastReturned == last) {
+                    removeLast();
+                } else {
+                    lastReturned.prev.next = lastReturned.next;
+                    lastReturned.next.prev = lastReturned.prev;
+                    size--;
+                }
+
+                lastReturned = null;
             }
         };
     }
