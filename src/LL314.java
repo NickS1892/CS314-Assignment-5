@@ -19,7 +19,7 @@ public class LL314<E> implements IList<E> {
     }
 
     public Iterator<E> iterator() {
-        return new Iterator<E>() {
+        return new Iterator<>() {
 
             private DoubleListNode<E> head = first;
             private DoubleListNode<E> lastReturned = null;
@@ -152,7 +152,7 @@ public class LL314<E> implements IList<E> {
         for(int i = 0; i < start; i++){
             head = head.next;
         }
-        LL314<E> sublist = new LL314<E>();
+        LL314<E> sublist = new LL314<>();
 
         for(int i = start; i < stop; i++){
             sublist.add(head.data);
