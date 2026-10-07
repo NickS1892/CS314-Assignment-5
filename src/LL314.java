@@ -102,7 +102,7 @@ public class LL314<E> implements IList<E> {
      * @param pos the index to search at
      * @return node at given position in the list
      */
-    public DoubleListNode<E> getNode(int pos){
+    private DoubleListNode<E> getNode(int pos){
 
         if(pos < 0 || pos >= size()){
             throw new IllegalArgumentException("Pos must be in bounds");
@@ -299,7 +299,7 @@ public class LL314<E> implements IList<E> {
      * add item to the front of the list. <br>
      * pre: item != null <br>
      * post: size() = old size() + 1, get(0) = item
-     *
+     * O(
      * @param item the data to add to the front of this list
      */
     public void addFirst(E item) {
@@ -382,7 +382,7 @@ public class LL314<E> implements IList<E> {
             return false;
         }
 
-        LL314<?> otherList = (LL314<?>) other;
+        LL314<?> otherList = (IList<?>) other;
 
         if (this.size != otherList.size) {
             return false;
