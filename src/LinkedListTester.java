@@ -22,278 +22,595 @@ import java.util.Random;
 import java.util.Arrays;
 import java.util.HashSet;
 
+/**
+ * Experiment Results
+ *<br>
+ * 1. Adding to the End (same N)
+ *<br>
+ *                   ArrayList                   LL314
+ *        N       Total     Per op          Total     Per op
+ *               (sec)   (microsec)        (sec)    (microsec)
+ *    ---------  ------   ----------      ------   ----------
+ *      30,000   0.1153      3.84         0.0334       1.11
+ *      60,000   0.3511      5.85         0.1298       2.16
+ *     120,000   0.1412      1.18         0.2249       1.87
+ *     240,000   0.7953      3.31         0.4740       1.98
+ *     480,000   1.4547      3.03         0.9817       2.05
+ *<br>
+ * 2. Adding to Front (LinkedList is faster)
+ *<br>
+ *            ArrayList                              LL314
+ *        N      Total     Per op          N        Total     Per op
+ *              (sec)   (microsec)                  (sec)   (microsec)
+ *    --------  ------  ----------     ---------   ------   ----------
+ *      2,000   0.0697      34.85         10,000   0.0079       0.79
+ *      4,000   0.1700      42.50         20,000   0.0143       0.72
+ *      8,000   0.5007      62.59         40,000   0.0298       0.75
+ *     16,000   1.8420     115.13         80,000   0.0560       0.70
+ *     32,000   7.2072     225.23        160,000   0.1324       0.83
+ *<br>
+ * 3. Removing from Front (LinkedList is faster)
+ *<br>
+ *            ArrayList                              LL314
+ *        N      Total     Per op          N        Total     Per op
+ *              (sec)   (microsec)                  (sec)   (microsec)
+ *    --------  ------  ----------     ---------   ------   ----------
+ *      2,000   0.0662      33.10          5,000   0.0017       0.34
+ *      4,000   0.1698      42.45         10,000   0.0035       0.35
+ *      8,000   0.4506      56.33         20,000   0.0091       0.46
+ *     16,000   1.7778     111.11         40,000   0.0227       0.57
+ *     32,000   6.9626     217.58         80,000   0.0563       0.70
+ *<br>
+ * 4. Getting Random (ArrayList is faster)
+ *<br>
+ *            ArrayList                              LL314
+ *        N      Total     Per op          N        Total     Per op
+ *              (sec)   (microsec)                  (sec)   (microsec)
+ *    --------  ------  ----------     ---------   ------   ----------
+ *     10,000   0.0253       2.53          1,000   0.1088     108.80
+ *     20,000   0.0541       2.71          2,000   0.4638     231.90
+ *     40,000   0.1167       2.92          4,000   1.8723     468.08
+ *     80,000   0.3432       4.29          8,000   7.6585     957.31
+ *    160,000   0.9740       6.09         16,000  30.9516    1934.48
+ *<br>
+ * 5. Getting all using Iterator (ArrayList is faster)
+ *<br>
+ *                   ArrayList                   LL314
+ *        N       Total     Per op          Total     Per op
+ *               (sec)   (microsec)        (sec)    (microsec)
+ *    ---------  ------   ----------      ------   ----------
+ *      50,000   0.0091      0.18         0.0167       0.33
+ *     100,000   0.0136      0.14         0.0357       0.36
+ *     200,000   0.0280      0.14         0.0813       0.41
+ *     400,000   0.0612      0.15         0.1743       0.44
+ *     800,000   0.1173      0.15         0.3693       0.46
+ *<br>
+ * 6. Getting all using get method (ArrayList is faster)
+ *<br>
+ *            ArrayList                              LL314
+ *        N      Total     Per op          N        Total     Per op
+ *              (sec)   (microsec)                  (sec)   (microsec)
+ *    --------  ------  ----------     ---------   ------   ----------
+ *    100,000   0.0126       0.13          1,000   0.1002     100.20
+ *    200,000   0.0296       0.15          2,000   0.4485     224.25
+ *    400,000   0.0605       0.15          4,000   1.8903     472.58
+ *    800,000   0.1196       0.15          8,000   7.5744     946.80
+ *  1,600,000   0.2389       0.15         16,000  30.3415    1896.34
+ *<br>
+ *
+ * Adding at end:
+ * Both were similar in speed. Example: for N = 480000, ArrayList took 1.4547 and
+ * LL314 took 0.9817. Both are about O(1). ArrayList is amortized O(1) because
+ * it sometimes resizes, while LL314 just adds a node to the end.
+ *<br>
+ * Adding at front:
+ * LL314 was much faster. ArrayList times increased quickly (0.0697 -> 7.2072)
+ * which suggests O(N). LL314 times increased slowly (0.0079 -> 0.1324) which
+ * suggests O(1). ArrayList has to shift all elements, LL314 just updates
+ * pointers.
+ *<br>
+ * Removing from front:
+ * LL314 was faster. ArrayList again grows quickly in time (0.0662 -> 6.9626)
+ * which suggests O(N) because elements must shift left. LL314 is about O(1)
+ * (0.0017 -> 0.0563) since it just moves the first pointer.
+ * <br>
+ * Getting random element:
+ * ArrayList was much faster. Its times grow slowly (0.0253 -> 0.9740) which
+ * suggests O(1) access. LL314 times grow very fast (0.1088 -> 30.9516) which
+ * suggests O(N) because it must traverse the list.
+ * <br>
+ * Getting all using iterator:
+ * Both are about O(N). ArrayList is a little faster (0.1173 vs 0.3693 at
+ * N = 800000) but both increase at about the same rate because every element
+ * must be visited.
+ * <br>
+ * Getting all using get():
+ * ArrayList is much faster. ArrayList is O(N) since each get is O(1). LL314
+ * is about O(N^2) because each get requires traversing the list. At N = 16000,
+ * LL314 took 30.3415 while ArrayList took only 0.2389 at N = 1600000.
+ * <br>
+ * Overall, LL314 was faster for adding and removing at the front because
+ * these operations only require updating pointers. ArrayList was faster
+ * when accessing a specific position because it provides O(1) access.
+ * When using an iterator to get every element, both were O(N) because
+ * each element only needs to be visited once.
+ */
 public class LinkedListTester {
 
     public static void main(String[] args) {
 
-        basicTests();
-        spring2021StressTests();
-        itRemoveStressTests();
 
 
-        //CS314 students. Add your tests here:
+       // studentTests();
 
         // CS314 Students:
         // uncomment the following line to run tests comparing
         // your LL314 class to the java ArrayList class.
-        // comparison();
+        comparison();
     }
 
-    /*
-     * Runs very basic tests on the LinkedList class for
-     * CS314 assignment 4.
-     */
-    private static void basicTests() {
+    private static void studentTests() {
+        System.out.println("****** STUDENT TESTS *******\n");
+        int testNum = 1;
 
-        System.out.println("****** BASIC TESTS *******\n");
-        LL314<String> list = new LL314<>();
-
-        // test 0
-        System.out.println("\nTest 0: initial list is empty");
-        if (list.toString().equals("[]")) {
-            System.out.println("Passed test 0");
-        } else {
-            System.out.println("Failed test 0");
+        // ------------------- add -------------------
+        System.out.println("\nTest " + testNum + ": add five elements keeps order and size");
+        LL314<Integer> add1 = new LL314<>();
+        for (int i = 1; i <= 5; i++) {
+            add1.add(i);
         }
+        System.out.println(add1.toString().equals("[1, 2, 3, 4, 5]") && add1.size() == 5
+                ? "Passed test " + testNum : "Failed test " + testNum);
+        testNum++;
 
-        // test 0.1
-        System.out.println("\nTest 0.1: add to end");
-        list.add("A");
-        if (list.get(0).equals("A")) {
-            System.out.println("Passed test 0.1");
-        } else {
-            System.out.println("Failed test 0.1");
+        System.out.println("\nTest " + testNum + ": add after makeEmpty starts a fresh list");
+        LL314<String> add2 = new LL314<>();
+        add2.add("a");
+        add2.makeEmpty();
+        add2.add("b");
+        add2.add("c");
+        System.out.println(add2.toString().equals("[b, c]") && add2.size() == 2
+                ? "Passed test " + testNum : "Failed test " + testNum);
+        testNum++;
+
+        // ------------------- insert -------------------
+        System.out.println("\nTest " + testNum + ": insert at pos 0 into empty list");
+        LL314<String> ins1 = new LL314<>();
+        ins1.insert(0, "A");
+        System.out.println(ins1.toString().equals("[A]") && ins1.size() == 1
+                ? "Passed test " + testNum : "Failed test " + testNum);
+        testNum++;
+
+        System.out.println("\nTest " + testNum + ": two middle inserts keep prev links correct");
+        LL314<String> ins2 = new LL314<>();
+        ins2.add("A");
+        ins2.add("D");
+        ins2.insert(1, "B");
+        ins2.insert(2, "C");
+        String insBack1 = ins2.removeLast();
+        String insBack2 = ins2.removeLast();
+        System.out.println(insBack1.equals("D") && insBack2.equals("C") && ins2.toString().equals("[A, B]")
+                ? "Passed test " + testNum : "Failed test " + testNum);
+        testNum++;
+
+        // ------------------- set -------------------
+        System.out.println("\nTest " + testNum + ": set middle element returns old value, size unchanged");
+        LL314<String> set1 = new LL314<>();
+        set1.add("A");
+        set1.add("B");
+        set1.add("C");
+        String setOld = set1.set(1, "X");
+        System.out.println(setOld.equals("B") && set1.toString().equals("[A, X, C]") && set1.size() == 3
+                ? "Passed test " + testNum : "Failed test " + testNum);
+        testNum++;
+
+        System.out.println("\nTest " + testNum + ": set with negative pos throws IllegalArgumentException");
+        LL314<String> set2 = new LL314<>();
+        set2.add("A");
+        boolean setThrew = false;
+        try {
+            set2.set(-1, "B");
+        } catch (IllegalArgumentException e) {
+            setThrew = true;
         }
+        System.out.println(setThrew && set2.get(0).equals("A")
+                ? "Passed test " + testNum : "Failed test " + testNum);
+        testNum++;
 
-        // test 0.2
-        System.out.println("\nTest 0.2: size");
-        if (list.size() == 1) {
-            System.out.println("Passed test 0.2");
-        } else {
-            System.out.println("Failed test 0.2");
+        // ------------------- get -------------------
+        System.out.println("\nTest " + testNum + ": get on single element list");
+        LL314<String> get1 = new LL314<>();
+        get1.add("solo");
+        System.out.println(get1.get(0).equals("solo") ? "Passed test " + testNum : "Failed test " + testNum);
+        testNum++;
+
+        System.out.println("\nTest " + testNum + ": get(size) throws IllegalArgumentException");
+        LL314<String> get2 = new LL314<>();
+        get2.add("A");
+        get2.add("B");
+        boolean getThrew = false;
+        try {
+            get2.get(2);
+        } catch (IllegalArgumentException e) {
+            getThrew = true;
         }
+        System.out.println(getThrew ? "Passed test " + testNum : "Failed test " + testNum);
+        testNum++;
 
-        // test 0.3
-        System.out.println("\nTest 0.3: remove from position 0");
-        String removed = list.remove(0);
-        if (removed.equals("A")) {
-            System.out.println("Passed test 0.31");
-        } else {
-            System.out.println("Failed test 0.31");
+        // ------------------- size -------------------
+        System.out.println("\nTest " + testNum + ": size after ten adds");
+        LL314<Integer> size1 = new LL314<>();
+        for (int i = 0; i < 10; i++) {
+            size1.add(i);
         }
+        System.out.println(size1.size() == 10 ? "Passed test " + testNum : "Failed test " + testNum);
+        testNum++;
 
-        System.out.println("\nTest 0.31: toString after remove");
-
-        // test 0.31
-        if (list.toString().equals("[]")) {
-            System.out.println("Passed test 0.3");
-        } else {
-            System.out.println("Failed test 0.3");
+        System.out.println("\nTest " + testNum + ": size unchanged by failed remove, drops after removeRange");
+        LL314<Integer> size2 = new LL314<>();
+        for (int i = 0; i < 5; i++) {
+            size2.add(i);
         }
+        size2.remove(Integer.valueOf(99));
+        boolean sizeSame = size2.size() == 5;
+        size2.removeRange(1, 3);
+        System.out.println(sizeSame && size2.size() == 3 ? "Passed test " + testNum : "Failed test " + testNum);
+        testNum++;
 
-        // test 0.4
-        System.out.println("\nTest 0.4: size");
-        if (list.size() == 0) {
-            System.out.println("Passed test 0.4");
-        } else {
-            System.out.println("Failed test 0.4");
+        // ------------------- remove(int pos) -------------------
+        System.out.println("\nTest " + testNum + ": remove(0) returns first and updates list");
+        LL314<String> rp1 = new LL314<>();
+        rp1.add("A");
+        rp1.add("B");
+        rp1.add("C");
+        String rp1Result = rp1.remove(0);
+        System.out.println(rp1Result.equals("A") && rp1.toString().equals("[B, C]") && rp1.size() == 2
+                ? "Passed test " + testNum : "Failed test " + testNum);
+        testNum++;
+
+        System.out.println("\nTest " + testNum + ": remove(size - 1) then add");
+        LL314<String> rp2 = new LL314<>();
+        rp2.add("A");
+        rp2.add("B");
+        rp2.add("C");
+        String rp2Result = rp2.remove(rp2.size() - 1);
+        rp2.add("D");
+        System.out.println(rp2Result.equals("C") && rp2.toString().equals("[A, B, D]")
+                ? "Passed test " + testNum : "Failed test " + testNum);
+        testNum++;
+
+        // ------------------- remove(E obj) -------------------
+        System.out.println("\nTest " + testNum + ": remove(obj) from middle keeps links in both directions");
+        LL314<String> ro1 = new LL314<>();
+        ro1.add("A");
+        ro1.add("B");
+        ro1.add("C");
+        boolean ro1Removed = ro1.remove("B");
+        String ro1Back1 = ro1.removeLast();
+        String ro1Back2 = ro1.removeLast();
+        System.out.println(ro1Removed && ro1Back1.equals("C") && ro1Back2.equals("A") && ro1.size() == 0
+                ? "Passed test " + testNum : "Failed test " + testNum);
+        testNum++;
+
+        System.out.println("\nTest " + testNum + ": remove(obj) on empty list returns false");
+        LL314<String> ro2 = new LL314<>();
+        System.out.println(!ro2.remove("A") && ro2.size() == 0
+                ? "Passed test " + testNum : "Failed test " + testNum);
+        testNum++;
+
+        // ------------------- makeEmpty -------------------
+        System.out.println("\nTest " + testNum + ": get on list after makeEmpty throws");
+        LL314<String> me1 = new LL314<>();
+        me1.add("A");
+        me1.add("B");
+        me1.makeEmpty();
+        boolean meThrew = false;
+        try {
+            me1.get(0);
+        } catch (IllegalArgumentException e) {
+            meThrew = true;
         }
+        System.out.println(meThrew && me1.toString().equals("[]")
+                ? "Passed test " + testNum : "Failed test " + testNum);
+        testNum++;
 
-        // test 0.5
-        System.out.println("\nTest 0.5: add and toString");
-        list.add("A");
-        list.add("B");
-        if (list.toString().equals("[A, B]")) {
-            System.out.println("Passed test 0.5");
-        } else {
-            System.out.println("Failed test 0.5");
+        System.out.println("\nTest " + testNum + ": makeEmpty twice then addFirst works");
+        LL314<String> me2 = new LL314<>();
+        me2.add("A");
+        me2.makeEmpty();
+        me2.makeEmpty();
+        me2.addFirst("Z");
+        System.out.println(me2.toString().equals("[Z]") && me2.size() == 1
+                ? "Passed test " + testNum : "Failed test " + testNum);
+        testNum++;
+
+        // ------------------- getSubList -------------------
+        System.out.println("\nTest " + testNum + ": getSubList from the front");
+        LL314<String> gs1 = new LL314<>();
+        gs1.add("A");
+        gs1.add("B");
+        gs1.add("C");
+        gs1.add("D");
+        IList<String> gs1Sub = gs1.getSubList(0, 2);
+        System.out.println(gs1Sub.toString().equals("[A, B]") && gs1Sub.size() == 2
+                ? "Passed test " + testNum : "Failed test " + testNum);
+        testNum++;
+
+        System.out.println("\nTest " + testNum + ": changing a sublist does not change the original");
+        LL314<String> gs2 = new LL314<>();
+        gs2.add("A");
+        gs2.add("B");
+        gs2.add("C");
+        gs2.add("D");
+        IList<String> gs2Sub = gs2.getSubList(2, 4);
+        gs2Sub.add("Z");
+        System.out.println(gs2Sub.toString().equals("[C, D, Z]") && gs2.toString().equals("[A, B, C, D]")
+                ? "Passed test " + testNum : "Failed test " + testNum);
+        testNum++;
+
+        // ------------------- indexOf(item) -------------------
+        System.out.println("\nTest " + testNum + ": indexOf finds item at the end");
+        LL314<String> io1 = new LL314<>();
+        io1.add("A");
+        io1.add("B");
+        io1.add("C");
+        System.out.println(io1.indexOf("C") == 2 ? "Passed test " + testNum : "Failed test " + testNum);
+        testNum++;
+
+        System.out.println("\nTest " + testNum + ": indexOf on empty list returns -1");
+        LL314<String> io2 = new LL314<>();
+        System.out.println(io2.indexOf("A") == -1 ? "Passed test " + testNum : "Failed test " + testNum);
+        testNum++;
+
+        // ------------------- indexOf(item, pos) -------------------
+        System.out.println("\nTest " + testNum + ": indexOf(item, 0) behaves like indexOf(item)");
+        LL314<String> ip1 = new LL314<>();
+        ip1.add("a");
+        ip1.add("b");
+        ip1.add("a");
+        System.out.println(ip1.indexOf("a", 0) == 0 ? "Passed test " + testNum : "Failed test " + testNum);
+        testNum++;
+
+        System.out.println("\nTest " + testNum + ": indexOf(item, pos) with negative pos throws");
+        LL314<String> ip2 = new LL314<>();
+        ip2.add("a");
+        boolean ipThrew = false;
+        try {
+            ip2.indexOf("a", -1);
+        } catch (IllegalArgumentException e) {
+            ipThrew = true;
         }
+        System.out.println(ipThrew ? "Passed test " + testNum : "Failed test " + testNum);
+        testNum++;
 
-        // test 0.6
-        System.out.println("\nTest 0.6: size");
-        if (list.size() == 2) {
-            System.out.println("Passed test 0.6");
-        } else {
-            System.out.println("Failed test 0.6");
+        // ------------------- iterator() -------------------
+        System.out.println("\nTest " + testNum + ": iterator() returns a non-null iterator");
+        LL314<String> it1 = new LL314<>();
+        System.out.println(it1.iterator() != null ? "Passed test " + testNum : "Failed test " + testNum);
+        testNum++;
+
+        System.out.println("\nTest " + testNum + ": two iterators on the same list are independent");
+        LL314<String> it2 = new LL314<>();
+        it2.add("A");
+        it2.add("B");
+        Iterator<String> itA = it2.iterator();
+        Iterator<String> itB = it2.iterator();
+        itA.next();
+        itA.next();
+        System.out.println(!itA.hasNext() && itB.hasNext() && itB.next().equals("A")
+                ? "Passed test " + testNum : "Failed test " + testNum);
+        testNum++;
+
+        // ------------------- iterator.hasNext -------------------
+        System.out.println("\nTest " + testNum + ": hasNext true until last element is returned");
+        LL314<String> hn1 = new LL314<>();
+        hn1.add("A");
+        hn1.add("B");
+        Iterator<String> hn1It = hn1.iterator();
+        hn1It.next();
+        boolean hnMid = hn1It.hasNext();
+        hn1It.next();
+        System.out.println(hnMid && !hn1It.hasNext() ? "Passed test " + testNum : "Failed test " + testNum);
+        testNum++;
+
+        System.out.println("\nTest " + testNum + ": hasNext false after removing the only element");
+        LL314<String> hn2 = new LL314<>();
+        hn2.add("A");
+        Iterator<String> hn2It = hn2.iterator();
+        hn2It.next();
+        hn2It.remove();
+        System.out.println(!hn2It.hasNext() && hn2.size() == 0
+                ? "Passed test " + testNum : "Failed test " + testNum);
+        testNum++;
+
+        // ------------------- iterator.next -------------------
+        System.out.println("\nTest " + testNum + ": next visits every element exactly once");
+        LL314<String> nx1 = new LL314<>();
+        nx1.add("A");
+        nx1.add("B");
+        nx1.add("C");
+        StringBuilder nxSb = new StringBuilder();
+        Iterator<String> nx1It = nx1.iterator();
+        while (nx1It.hasNext()) {
+            nxSb.append(nx1It.next());
         }
+        System.out.println(nxSb.toString().equals("ABC") ? "Passed test " + testNum : "Failed test " + testNum);
+        testNum++;
 
-        // test 0.7
-        System.out.println("\nTest 0.7: makeEmpty");
-        list.makeEmpty();
-        if (list.size() == 0) {
-            System.out.println("Passed test 0.7");
-        } else {
-            System.out.println("Failed test 0.7");
+        System.out.println("\nTest " + testNum + ": next on integers sums correctly");
+        LL314<Integer> nx2 = new LL314<>();
+        for (int i = 1; i <= 4; i++) {
+            nx2.add(i);
         }
-
-        // test 0.8
-        System.out.println("\nTest 0.8: makeEmpty on empty list");
-        list.makeEmpty();
-        if (list.size() == 0) {
-            System.out.println("Passed test 0.8");
-        } else {
-            System.out.println("Failed test 0.8");
+        int nxSum = 0;
+        Iterator<Integer> nx2It = nx2.iterator();
+        while (nx2It.hasNext()) {
+            nxSum += nx2It.next();
         }
+        System.out.println(nxSum == 10 ? "Passed test " + testNum : "Failed test " + testNum);
+        testNum++;
 
-
-        // test 1
-        System.out.println("\nTest 1: Adding at end");
-        list = new LL314<>();
-        list.add("A");
-        Object[] actual = toArray(list);
-        Object[] expected = new Object[] {"A"};
-        System.out.println("Expected result: " + Arrays.toString(expected));
-        System.out.println("Actual result: " + Arrays.toString(actual));
-        if (arraysSame(actual, expected)) {
-            System.out.println("Passed test 1");
-        } else {
-            System.out.println("Failed test 1");
+        // ------------------- iterator.remove -------------------
+        System.out.println("\nTest " + testNum + ": removing every even number while iterating");
+        LL314<Integer> ir1 = new LL314<>();
+        for (int i = 1; i <= 6; i++) {
+            ir1.add(i);
         }
-
-
-        // test 2
-        System.out.println("\nTest 2: making empty");
-        list.makeEmpty();
-        actual = toArray(list);
-        expected = new Object[] {};
-        System.out.println( "Expected result: " + Arrays.toString(expected) );
-        System.out.println( "Actual result: " + Arrays.toString(actual) );
-        if (arraysSame(actual, expected)) {
-            System.out.println("Passed test 2");
-        } else {
-            System.out.println("Failed test 2");
-        }
-
-
-            // test 3
-            System.out.println("\nTest 3: Adding at pos 0 in empty list");
-            list.insert(0, "A");
-            actual = toArray(list);
-            expected = new Object[] {"A"};
-            System.out.println( "Expected result: " + Arrays.toString(expected) );
-            System.out.println( "Actual result: " + Arrays.toString(actual) );
-            if (arraysSame(actual, expected)) {
-                System.out.println("Passed test 3");
-            } else {
-                System.out.println("Failed test 3");
+        Iterator<Integer> ir1It = ir1.iterator();
+        while (ir1It.hasNext()) {
+            if (ir1It.next() % 2 == 0) {
+                ir1It.remove();
             }
-
-
-        //test 4
-        System.out.println("\nTest 4: Adding at front");
-        list = new LL314<>();
-        list.addFirst("A");
-        actual = toArray(list);
-        expected = new Object[] {"A"};
-        System.out.println("Expected result: " + Arrays.toString(expected));
-        System.out.println("Actual result: " + Arrays.toString(actual));
-        if (arraysSame(actual, expected)) {
-            System.out.println("Passed test 4");
-        } else {
-            System.out.println("Failed test 4");
         }
+        System.out.println(ir1.toString().equals("[1, 3, 5]") && ir1.size() == 3
+                ? "Passed test " + testNum : "Failed test " + testNum);
+        testNum++;
 
+        System.out.println("\nTest " + testNum + ": removing the first element via iterator, next continues");
+        LL314<String> ir2 = new LL314<>();
+        ir2.add("A");
+        ir2.add("B");
+        ir2.add("C");
+        Iterator<String> ir2It = ir2.iterator();
+        ir2It.next();
+        ir2It.remove();
+        System.out.println(ir2It.next().equals("B") && ir2.toString().equals("[B, C]")
+                ? "Passed test " + testNum : "Failed test " + testNum);
+        testNum++;
 
-        // test 5
-        System.out.println("\nTest 5: Removing from front");
-        list.removeFirst();
-        actual = toArray(list);
-        expected = new Object[] {};
-        System.out.println("Expected result: " + Arrays.toString(expected));
-        System.out.println("Actual result: " + Arrays.toString(actual));
-        if (arraysSame(actual, expected)) {
-            System.out.println("Passed test 5");
-        } else {
-            System.out.println("Failed test 5");
+        // ------------------- removeRange -------------------
+        System.out.println("\nTest " + testNum + ": removeRange of the whole list, then add");
+        LL314<String> rr1 = new LL314<>();
+        rr1.add("A");
+        rr1.add("B");
+        rr1.add("C");
+        rr1.removeRange(0, rr1.size());
+        boolean rr1Empty = rr1.size() == 0 && rr1.toString().equals("[]");
+        rr1.add("Z");
+        System.out.println(rr1Empty && rr1.toString().equals("[Z]")
+                ? "Passed test " + testNum : "Failed test " + testNum);
+        testNum++;
+
+        System.out.println("\nTest " + testNum + ": removeRange in the middle keeps links correct");
+        LL314<String> rr2 = new LL314<>();
+        rr2.add("A");
+        rr2.add("B");
+        rr2.add("C");
+        rr2.add("D");
+        rr2.add("E");
+        rr2.removeRange(1, 3);
+        String rr2Back1 = rr2.removeLast();
+        String rr2Back2 = rr2.removeLast();
+        String rr2Back3 = rr2.removeLast();
+        System.out.println(rr2Back1.equals("E") && rr2Back2.equals("D") && rr2Back3.equals("A") && rr2.size() == 0
+                ? "Passed test " + testNum : "Failed test " + testNum);
+        testNum++;
+
+        // ------------------- toString -------------------
+        System.out.println("\nTest " + testNum + ": toString with two elements");
+        LL314<String> ts1 = new LL314<>();
+        ts1.add("a");
+        ts1.add("b");
+        System.out.println(ts1.toString().equals("[a, b]") ? "Passed test " + testNum : "Failed test " + testNum);
+        testNum++;
+
+        System.out.println("\nTest " + testNum + ": toString after makeEmpty");
+        LL314<Integer> ts2 = new LL314<>();
+        ts2.add(1);
+        ts2.makeEmpty();
+        System.out.println(ts2.toString().equals("[]") ? "Passed test " + testNum : "Failed test " + testNum);
+        testNum++;
+
+        // ------------------- equals -------------------
+        System.out.println("\nTest " + testNum + ": lists equal after one has an element removed");
+        LL314<String> eq1a = new LL314<>();
+        eq1a.add("a");
+        eq1a.add("b");
+        eq1a.add("c");
+        eq1a.remove("c");
+        LL314<String> eq1b = new LL314<>();
+        eq1b.add("a");
+        eq1b.add("b");
+        System.out.println(eq1a.equals(eq1b) && eq1b.equals(eq1a)
+                ? "Passed test " + testNum : "Failed test " + testNum);
+        testNum++;
+
+        System.out.println("\nTest " + testNum + ": same elements in different order are not equal");
+        LL314<String> eq2a = new LL314<>();
+        eq2a.add("a");
+        eq2a.add("b");
+        LL314<String> eq2b = new LL314<>();
+        eq2b.add("b");
+        eq2b.add("a");
+        System.out.println(!eq2a.equals(eq2b) ? "Passed test " + testNum : "Failed test " + testNum);
+        testNum++;
+
+        // ------------------- addFirst -------------------
+        System.out.println("\nTest " + testNum + ": addFirst onto an existing list");
+        LL314<String> af1 = new LL314<>();
+        af1.add("B");
+        af1.addFirst("A");
+        System.out.println(af1.toString().equals("[A, B]") && af1.size() == 2
+                ? "Passed test " + testNum : "Failed test " + testNum);
+        testNum++;
+
+        System.out.println("\nTest " + testNum + ": addFirst in a loop reverses order");
+        LL314<Integer> af2 = new LL314<>();
+        for (int i = 0; i < 5; i++) {
+            af2.addFirst(i);
         }
+        System.out.println(af2.get(0) == 4 && af2.get(4) == 0 && af2.size() == 5
+                ? "Passed test " + testNum : "Failed test " + testNum);
+        testNum++;
 
+        // ------------------- removeFirst -------------------
+        System.out.println("\nTest " + testNum + ": repeated removeFirst returns elements in order");
+        LL314<String> rf1 = new LL314<>();
+        rf1.add("A");
+        rf1.add("B");
+        rf1.add("C");
+        String rf1a = rf1.removeFirst();
+        String rf1b = rf1.removeFirst();
+        String rf1c = rf1.removeFirst();
+        System.out.println(rf1a.equals("A") && rf1b.equals("B") && rf1c.equals("C") && rf1.size() == 0
+                ? "Passed test " + testNum : "Failed test " + testNum);
+        testNum++;
 
-        // test 6
-        list = new LL314<>();
-        System.out.println("\nTest 6: Adding at end");
-        list.add("A");
-        actual = toArray(list);
-        expected = new Object[] {"A"};
-        System.out.println("Expected result: " + Arrays.toString(expected));
-        System.out.println("Actual result: " + Arrays.toString(actual));
-        if (arraysSame(actual, expected)) {
-            System.out.println("Passed test 6");
-        } else {
-            System.out.println("Failed test 6");
-        }
+        System.out.println("\nTest " + testNum + ": removeFirst then addFirst keeps links correct");
+        LL314<String> rf2 = new LL314<>();
+        rf2.add("A");
+        rf2.add("B");
+        rf2.removeFirst();
+        rf2.addFirst("X");
+        String rf2Last = rf2.removeLast();
+        System.out.println(rf2Last.equals("B") && rf2.toString().equals("[X]")
+                ? "Passed test " + testNum : "Failed test " + testNum);
+        testNum++;
 
+        // ------------------- removeLast -------------------
+        System.out.println("\nTest " + testNum + ": repeated removeLast returns elements in reverse");
+        LL314<String> rl1 = new LL314<>();
+        rl1.add("A");
+        rl1.add("B");
+        rl1.add("C");
+        String rl1a = rl1.removeLast();
+        String rl1b = rl1.removeLast();
+        String rl1c = rl1.removeLast();
+        System.out.println(rl1a.equals("C") && rl1b.equals("B") && rl1c.equals("A") && rl1.size() == 0
+                ? "Passed test " + testNum : "Failed test " + testNum);
+        testNum++;
 
-        // test 7
-        System.out.println("\nTest 7: Removing from back");
-        list.removeLast();
-        actual = toArray(list);
-        expected = new Object[] {};
-        System.out.println("Expected result: " + Arrays.toString(expected));
-        System.out.println("Actual result: " + Arrays.toString(actual));
-        if (arraysSame(actual, expected)) {
-            System.out.println("Passed test 7");
-        } else {
-            System.out.println("Failed test 7");
-        }
+        System.out.println("\nTest " + testNum + ": removeLast then removeFirst on two elements empties list");
+        LL314<String> rl2 = new LL314<>();
+        rl2.add("A");
+        rl2.add("B");
+        String rl2Last = rl2.removeLast();
+        String rl2First = rl2.removeFirst();
+        System.out.println(rl2Last.equals("B") && rl2First.equals("A") && rl2.size() == 0
+                && rl2.toString().equals("[]") ? "Passed test " + testNum : "Failed test " + testNum);
+        testNum++;
 
-        // test 8
-        System.out.println("\nTest 8: Adding at middle");
-        list = new LL314<>();
-        list.add("A");
-        list.add("C");
-        list.insert(1, "B");
-        actual = toArray(list);
-        expected = new Object[] {"A", "B", "C"};
-        System.out.println( "Expected result: " + Arrays.toString(expected) );
-        System.out.println( "Actual result: " + Arrays.toString(actual) );
-        if (arraysSame(actual, expected)) {
-            System.out.println("Passed test 8");
-        } else {
-            System.out.println("Failed test 8");
-        }
-
-
-        // test 9
-        System.out.println("\nTest 9: Setting");
-        list = new LL314<>();
-        list.add("A");
-        list.add("D");
-        list.add("C");
-        String oldValue = list.set(1, "B");
-        actual = toArray(list);
-        expected = new Object[] {"A", "B", "C"};
-        System.out.println("Expected result: " + Arrays.toString(expected));
-        System.out.println("Actual result: " + Arrays.toString(actual));
-        if (arraysSame(actual, expected) ) {
-            System.out.println("Passed test 9.1");
-        } else {
-            System.out.println("Failed test 9.1");
-        }
-        if (oldValue.equals("D")) {
-            System.out.println("Passed test 9.2");
-        } else {
-            System.out.println("Failed test 9.2");
-        }
-
-
-        // test 10
-        System.out.println("\nTest 10: Removing");
-        list = new LL314<>();
-        list.add("A");
-        list.add("B");
-        list.add("C");
-        list.add("D");
-        list.remove(0);
-        list.remove( list.size() - 1 );
-        actual = toArray(list);
-        expected = new Object[] {"B", "C"};
-        System.out.println("Expected result: " + Arrays.toString(expected));
-        System.out.println("Actual result: " + Arrays.toString(actual));
-        if (arraysSame(actual, expected)) {
-            System.out.println("Passed test 10");
-        } else {
-            System.out.println("Failed test 10");
-        }
+        System.out.println("\n****** TESTS COMPLETE (" + (testNum - 1) + " tests) *******\n");
     }
 
 

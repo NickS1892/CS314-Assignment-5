@@ -150,9 +150,9 @@ public class LL314<E> implements IList<E> {
 
 
     /**
-     * Get an element from the list. <br>
+     * Removes and return an element at the pos. <br>
      * pre: 0 <= pos < size() <br>
-     * post: return the item at pos <br>
+     * post: size() - 1 and element removed <br>
      * O(N) - must traverse up to N nodes to reach pos
      *
      * @param pos specifies which element to get
@@ -176,6 +176,16 @@ public class LL314<E> implements IList<E> {
         return data;
     }
 
+    /**
+     * Removes first occurrence of the specified object from this list.
+     * <br>pre: none
+     * <br>post: if obj is found, its first occurrence is removed and
+     * size() is decreased by one; otherwise the list is unchanged
+     * <br>O(N) - may need to search through the entire list
+     *
+     * @param obj the object to remove
+     * @return true if an element was removed, false otherwise
+     */
     public boolean remove(E obj) {
         DoubleListNode<E> current = first;
 
@@ -201,6 +211,12 @@ public class LL314<E> implements IList<E> {
         return false;
     }
 
+    /**
+     * Removes all elements from this list.
+     * <br>pre: none
+     * <br>post: size() = 0, first = null, last = null
+     * <br>O(1) - only resets the list references and size
+     */
     public void makeEmpty(){
         first = null;
         last = null;
@@ -208,12 +224,36 @@ public class LL314<E> implements IList<E> {
     }
 
 
-    //get element at pos
+    /**
+     * Gets an element from the list at pos.
+     * <br>pre: 0 <= pos < size()
+     * <br>post: returns the item at position pos
+     * <br>O(N) - may need to traverse up to N nodes to reach pos
+     *
+     * @param pos specifies which element to get
+     * @return the element at the specified position
+     * @throws IllegalArgumentException if pos is outside the valid range
+     */
     public E get(int pos){
+        //pre cons checked by getNode() method
         return getNode(pos).data;
     }
 
+    /**
+     * Returns a new list containing the elements from start, inclusive,
+     * to stop, exclusive.
+     * <br>pre: 0 <= start <= stop <= size()
+     * <br>post: returned list contains the elements from start through stop - 1
+     * <br>O(N) - traverses the list to reach start and copies the requested elements
+     *
+     * @param start the starting position, inclusive
+     * @param stop the ending position, exclusive
+     * @return a new list containing the specified range of elements
+     */
     public IList<E> getSubList(int start, int stop){
+        if (start < 0 || start > stop || stop > size()) {
+            throw new IllegalArgumentException("Start and stop must be in bounds.");
+        }
         DoubleListNode<E> head = first;
         for(int i = 0; i < start; i++){
             head = head.next;
@@ -228,7 +268,21 @@ public class LL314<E> implements IList<E> {
         return sublist;
     }
 
+    /**
+     * Returns the position of the first occurrence of the specified item.
+     * <br>pre: item != null
+     * <br>post: returns the index of the first occurrence of item,
+     * or -1 if item is not found
+     * <br>O(N) - may search through the entire list
+     *
+     * @param item the item to search for
+     * @return the index of the first occurrence of item, or -1 if not found
+     */
     public int indexOf(E item){
+        if(item == null){
+            throw new IllegalArgumentException("Item to search for cannot be null");
+        }
+
         DoubleListNode<E> head = first;
         int idx = 0;
 
@@ -242,7 +296,31 @@ public class LL314<E> implements IList<E> {
         return -1;
     }
 
+    /**
+     * find the position of an element in the list starting
+     * at a specified position.
+     * <br>pre: 0 <= pos < size(), item != null
+     * <br>post: return the index of the first element equal
+     * to item starting at pos
+     * or -1 if item is not present from position pos onward
+     * <br>O(N) - may search through the remainder of the list
+     *
+     * @param item the element to search for in the list. Item != null
+     * @param pos the position in the list to start searching from
+     * @return starting from the specified position
+     * return the index of the first element equal to item
+     * or a -1 if item is not present between pos
+     * and the end of the list
+     */
     public int indexOf(E item, int pos) {
+        if(item == null){
+            throw new IllegalArgumentException("Item to search for cannot be null");
+        }
+
+        if(pos < 0 || pos >= size()){
+            throw new IllegalArgumentException("Pos must be in bounds");
+        }
+
         DoubleListNode<E> head = getNode(pos);
         int index = pos;
 
@@ -258,26 +336,52 @@ public class LL314<E> implements IList<E> {
         return -1;
     }
     /**
-     * insert item to position in linkedlist
-     * pre: item != null <br>
-     * post: size is incremented by one, get(pos) = item
+     * Insert an item at a specified position in the list.
+     * <br>pre: 0 <= pos <= size(), item != null
+     * <br>post: size() = old size() + 1, get(pos) = item,
+     * all elements in the list with a positon >= pos have a
+     * position = old position + 1
+     *
+     * O(N) worst case, calls getNode() up to N nodes
+     * @param pos the position to insert the data at in the list
+     * @param item the data to add to the list, item != null
      */
     public void insert(int pos, E item){
+        if(item == null){
+            throw new IllegalArgumentException("Element to be added cannot be null");
+        }
 
-        if(pos == 0){
-            addFirst(item);
-        }else if(pos == size){
+        if(pos < 0 || pos > size()){
+            throw new IllegalArgumentException("Pos must be in bounds");
+        }
+
+        if(pos == size()){
             add(item);
+        }else if(pos == 0){
+            DoubleListNode<E> newNode = new DoubleListNode<>(null, item, first);
+            first.prev = newNode;
+            first = newNode;
+            size++;
         }else{ //default case
-            DoubleListNode<E> prevNode = getNode(pos - 1);
-            DoubleListNode<E> newNode = new DoubleListNode<>(prevNode, item, getNode(pos));
+            DoubleListNode<E> nextNode = getNode(pos);
+            DoubleListNode<E> prevNode = nextNode.prev;
+            DoubleListNode<E> newNode = new DoubleListNode<>(prevNode, item, nextNode);
             prevNode.next = newNode;
-            newNode.prev = newNode;
+            nextNode.prev = newNode;
             size++;
         }
 
     }
 
+    /**
+     * Adds an item to the end of the list.
+     * <br>pre: item != null
+     * <br>post: size() = old size() + 1 and the new item is at the end
+     * <br>O(1) - directly uses the last node reference
+     *
+     * @param item the item to add to the end of this list
+     * @throws IllegalArgumentException if item is null
+     */
     public void add(E item) {
         if (item == null) {
             throw new IllegalArgumentException("Item to add cannot be null");
@@ -296,11 +400,13 @@ public class LL314<E> implements IList<E> {
         size++;
     }
     /**
-     * add item to the front of the list. <br>
-     * pre: item != null <br>
-     * post: size() = old size() + 1, get(0) = item
-     * O(
+     * Adds an item to the front of the list.
+     * <br>pre: item != null
+     * <br>post: size() = old size() + 1 and get(0) = item
+     * <br>O(N) - calls insert(0, item), takes a single node and updates pointers without traversing
+     *
      * @param item the data to add to the front of this list
+     * @throws IllegalArgumentException if item is null
      */
     public void addFirst(E item) {
         if(item == null){
@@ -314,6 +420,7 @@ public class LL314<E> implements IList<E> {
      * remove and return the first element of this list. <br>
      * pre: size() > 0 <br>
      * post: size() = old size() - 1
+     * O(1) - only updates the first reference and size
      *
      * @return the old first element of this list
      */
@@ -328,6 +435,7 @@ public class LL314<E> implements IList<E> {
      * remove and return the last element of this list. <br>
      * pre: size() > 0 <br>
      * post: size() = old size() - 1
+     * O(1) - only updates the last reference and size
      *
      * @return the old last element of this list
      */
@@ -346,12 +454,33 @@ public class LL314<E> implements IList<E> {
         return data;
     }
 
+    /**
+     * Removes all elements from start, inclusive, to stop, exclusive.
+     * <br>pre: 0 <= start <= stop <= size()
+     * <br>post: all elements from start through stop - 1 are removed
+     * <br>O(N^2) - repeatedly calls remove(start), which may traverse the list
+     *
+     * @param start the starting position, inclusive
+     * @param stop the ending position, exclusive
+     */
     public void removeRange(int start, int stop){
+        if (start < 0 || start > stop || stop > size()) {
+            throw new IllegalArgumentException("Start and stop must be in bounds.");
+        }
+
         for(int i = start; i < stop;i++){
             remove(start);
         }
     }
 
+    /**
+     * Returns a String representation of this list.
+     * <br>pre: none
+     * <br>post: returns a string containing all elements in list order
+     * <br>O(N) - visits every node in the list once
+     *
+     * @return a String representation of this list
+     */
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("[");
@@ -372,6 +501,20 @@ public class LL314<E> implements IList<E> {
         return sb.toString();
     }
 
+
+    /**
+     * Determines whether this list is equal to another object.
+     * Two LL314 lists are equal if they contain the same number of elements
+     * and the elements occur in the same order.
+     * <br>pre: none
+     * <br>post: returns true if the other object represents an equal list,
+     * false otherwise
+     * <br>O(N^2) - may compare every element in both lists
+     *
+     * @param other the object to compare with this list
+     * @return true if the two lists contain the same elements in the same order,
+     *         false otherwise
+     */
     @Override
     public boolean equals(Object other) {
         if (this == other) {
@@ -382,24 +525,20 @@ public class LL314<E> implements IList<E> {
             return false;
         }
 
-        LL314<?> otherList = (IList<?>) other;
+        IList<?> otherList = (IList<?>) other;
 
-        if (this.size != otherList.size) {
+        if (this.size != otherList.size()) {
             return false;
         }
 
         DoubleListNode<E> current1 = this.first;
-        DoubleListNode<?> current2 = otherList.first;
 
-        while (current1 != null) {
-            if (!current1.data.equals(current2.data)) {
+        for(int i = 0; i < size; i++){
+            if(!current1.data.equals(otherList.get(i))){
                 return false;
             }
-
             current1 = current1.next;
-            current2 = current2.next;
         }
-
         return true;
     }
 
