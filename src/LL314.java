@@ -149,7 +149,15 @@ public class LL314<E> implements IList<E> {
     }
 
 
-
+    /**
+     * Get an element from the list. <br>
+     * pre: 0 <= pos < size() <br>
+     * post: return the item at pos <br>
+     * O(N) - must traverse up to N nodes to reach pos
+     *
+     * @param pos specifies which element to get
+     * @return the element at the specified position in the list
+     */
     public E remove(int pos) {
         if (pos == 0) {
             return removeFirst();
