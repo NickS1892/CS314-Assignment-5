@@ -307,13 +307,7 @@ public class LL314<E> implements IList<E> {
             throw new IllegalArgumentException("Item to add cannot be null");
         }
 
-        if(size == 0){
-            add(item);
-        }else{
-            DoubleListNode<E> nodeToAdd = new DoubleListNode<>(null, item, getNode(0));
-            first = nodeToAdd;
-            size++;
-        }
+        insert(0, item);
     }
 
     /**
