@@ -125,6 +125,7 @@ public class LL314<E> implements IList<E> {
      * @param pos the position in the list to overwrite
      * @param item the new item that will overwrite the old item,
      * item != null
+     * O(N) - searches up to N nodes and then swaps data at pos
      * @return data of node before setting to a new element
      */
     public E set(int pos, E item){
@@ -141,9 +142,12 @@ public class LL314<E> implements IList<E> {
         return oldData;
     }
 
+    //returns size of this LL314
+    //O(1) - just uses instance variable that is updated throughout the class
     public int size(){
         return this.size;
     }
+
 
 
     public E remove(int pos) {
