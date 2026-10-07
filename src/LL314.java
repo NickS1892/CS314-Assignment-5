@@ -136,7 +136,9 @@ public class LL314<E> implements IList<E> {
     }
 
     public void makeEmpty(){
-
+        first = null;
+        last = null;
+        size = 0;
     }
 
 
