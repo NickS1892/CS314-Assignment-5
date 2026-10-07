@@ -18,17 +18,41 @@ public class LL314<E> implements IList<E> {
 
     }
 
+    /**
+     * Return an Iterator for this list. <br>
+     * pre: none <br>
+     * post: return an Iterator object for this List <br>
+     * O(1) - creates and returns a new iterator object
+     */
     public Iterator<E> iterator() {
-        return new Iterator<>() {
+        return new LL314Iterator();
+    }
+
+
+    //class to create an iterator for LL314
+    private class LL314Iterator implements Iterator<E>{
 
             private DoubleListNode<E> head = first;
+
+            //node most recently called on by next()
             private DoubleListNode<E> lastReturned = null;
 
+
+            /**
+             * O(1) method, just checks if head (current node) is null
+             * @return true if there are more elements to iterate over, false otherwise
+             */
             @Override
             public boolean hasNext() {
                 return head != null;
             }
 
+            /**
+             * Advances iterator and returns the next element. Saves node in lastReturned
+             * so remove() can simply look it up rather than search for it again.
+             * O(1) - follows pointer and updates current reference
+             * @return next node's data
+             */
             @Override
             public E next() {
                 if (!hasNext()) {
@@ -42,12 +66,18 @@ public class LL314<E> implements IList<E> {
                 return result;
             }
 
+            /**
+             * Removes node most recently called by next().
+             * next() must be called before, throws IllegalStateException() otherwise
+             * O(1) - only small pointer updates, no traversing
+             */
             @Override
             public void remove(){
                 //nothing to return
                 if (lastReturned == null) {
                     throw new IllegalStateException();
                 }
+
 
                 if (lastReturned == first) {
                     removeFirst();
@@ -61,8 +91,8 @@ public class LL314<E> implements IList<E> {
 
                 lastReturned = null;
             }
-        };
-    }
+        }
+
 
 
     public DoubleListNode<E> getNode(int pos){
