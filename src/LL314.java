@@ -93,10 +93,18 @@ public class LL314<E> implements IList<E> {
             }
         }
 
-
-
+    /**
+     * Gets an element from the list <br>
+     * pre: 0 <= pos < size() <br>
+     * post: node at pos <br>
+     * @param pos the index to search at
+     * @return node at given position in the list
+     */
     public DoubleListNode<E> getNode(int pos){
 
+        if(pos < 0 || pos >= size()){
+            throw new IllegalArgumentException("Pos must be in bounds");
+        }
         if(pos == size - 1){
             return last;
         }
