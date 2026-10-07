@@ -97,6 +97,8 @@ public class LL314<E> implements IList<E> {
      * Gets an element from the list <br>
      * pre: 0 <= pos < size() <br>
      * post: node at pos <br>
+     * O(N) - searches up to N nodes to reach pos
+     *
      * @param pos the index to search at
      * @return node at given position in the list
      */
@@ -118,7 +120,21 @@ public class LL314<E> implements IList<E> {
     }
 
 
+    /**
+     * Sets node at pos data to new given element
+     * @param pos the position in the list to overwrite
+     * @param item the new item that will overwrite the old item,
+     * item != null
+     * @return data of node before setting to a new element
+     */
     public E set(int pos, E item){
+        if(item == null){
+            throw new IllegalArgumentException("Element to be set to cannot be null.");
+        }
+
+        if(pos < 0 || pos >= size()){
+            throw new IllegalArgumentException("Pos must be in bounds.");
+        }
         DoubleListNode<E> node = getNode(pos);
         E oldData = node.data;
         node.data = item;
