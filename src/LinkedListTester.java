@@ -1,17 +1,12 @@
 /*  Student information for assignment:
  *
- *  On my honor, <NAME>, this programming assignment is my own work
+ *  On my honor, <Nick Sin>, this programming assignment is my own work
  *  and I have not provided this code to any other student.
  *
- *  Name:
- *  email address:
- *  UTEID:
- *  Number of slip days used on this assignment:
- */
-
-/* Experiment results. CS314 students, place your experiment
- *  results here:
- *
+ *  Name: Nick Sin
+ *  email address: nicksin@utexas.edu
+ *  UTEID:ns39543
+ *  Number of slip days used on this assignment: 0
  */
 
 

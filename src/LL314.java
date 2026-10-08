@@ -1,10 +1,11 @@
-/*
- * Student information for assignment:
- * On my honor, <NAME>, this programming assignment is my own work
- * and I have not provided this code to any other student.
- * UTEID:
- * email address:
- * Number of slip days I am using:
+/*  Student information for assignment:
+ *
+ *  On my honor, <Nick Sin>, this programming assignment is my own work
+ *  and I have not provided this code to any other student.
+ *
+ *  email address: nicksin@utexas.edu
+ *  UTEID:ns39543
+ *  Number of slip days used on this assignment: 0
  */
 
 import java.util.Iterator;
